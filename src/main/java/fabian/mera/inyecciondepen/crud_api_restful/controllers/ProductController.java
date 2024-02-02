@@ -2,6 +2,7 @@ package fabian.mera.inyecciondepen.crud_api_restful.controllers;
 
 import fabian.mera.inyecciondepen.crud_api_restful.entities.Product;
 import fabian.mera.inyecciondepen.crud_api_restful.services.ProductService;
+import fabian.mera.inyecciondepen.crud_api_restful.validation.ProductValidation;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +19,11 @@ import java.util.Optional;
 public class ProductController {
 
     private final ProductService productService;
+    private final ProductValidation productValidation;
 
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, ProductValidation productValidation) {
         this.productService = productService;
+        this.productValidation = productValidation;
     }
 
     @GetMapping
@@ -41,6 +44,7 @@ public class ProductController {
     //BindingResult va despues del RequestBody
     @PostMapping
     public ResponseEntity<?> createProduct(@Valid @RequestBody Product product, BindingResult bindingResult) {
+        productValidation.validate(product, bindingResult);
         if (bindingResult.hasErrors()) {
             return validation(bindingResult);
         }
